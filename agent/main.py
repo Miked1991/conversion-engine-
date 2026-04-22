@@ -9,6 +9,10 @@ import uuid
 from datetime import datetime
 from fastapi import FastAPI, Request, HTTPException
 from contextlib import asynccontextmanager
+from dotenv import load_dotenv
+
+# Load environment variables from .env file
+load_dotenv()
 
 # Import all services
 from agent.enrichment_pipeline import enrich_prospect
@@ -45,6 +49,21 @@ async def lifespan(app: FastAPI):
 
 
 app = FastAPI(lifespan=lifespan)
+
+
+@app.get("/")
+async def root():
+    """API root - returns information about the Conversion Engine"""
+    return {
+        "name": "Conversion Engine",
+        "version": "1.0.0",
+        "description": "Central router for all incoming messages and prospect lifecycle management",
+        "endpoints": {
+            "health": "/health",
+            "docs": "/docs",
+            "webhooks": "/webhooks/email"
+        }
+    }
 
 
 @app.get("/health")
